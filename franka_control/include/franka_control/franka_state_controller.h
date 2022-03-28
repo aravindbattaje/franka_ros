@@ -15,13 +15,16 @@
 #include <sensor_msgs/JointState.h>
 #include <tf2_msgs/TFMessage.h>
 
+#include <franka_hw/franka_model_interface.h>
+
 namespace franka_control {
 
 /**
  * Controller to publish the robot state as ROS topics.
  */
 class FrankaStateController
-    : public controller_interface::MultiInterfaceController<franka_hw::FrankaStateInterface> {
+    : public controller_interface::MultiInterfaceController<franka_hw::FrankaStateInterface,
+                                                            franka_hw::FrankaModelInterface> {
  public:
   /**
    * Creates an instance of a FrankaStateController.
@@ -67,6 +70,9 @@ class FrankaStateController
   franka::RobotState robot_state_;
   uint64_t sequence_number_ = 0;
   std::vector<std::string> joint_names_;
+
+  std::unique_ptr<franka_hw::FrankaModelHandle> model_handle_;
+
 };
 
 }  // namespace franka_control
