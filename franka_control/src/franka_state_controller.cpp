@@ -405,9 +405,13 @@ void FrankaStateController::publishFrankaStates(const ros::Time& time) {
     }
 
     ///////////////////////
-    std::array<double, 42> jacobian_array = model_handle_->getBodyJacobian(franka::Frame::kEndEffector);
-    for (size_t i = 0; i < jacobian_array.size(); i++) {
-      publisher_franka_states_.msg_.J_e[i] = jacobian_array[i];
+    std::array<double, 42> body_jacobian_array = model_handle_->getBodyJacobian(franka::Frame::kEndEffector);
+    for (size_t i = 0; i < body_jacobian_array.size(); i++) {
+      publisher_franka_states_.msg_.ee_J_ee[i] = body_jacobian_array[i];
+    }
+    std::array<double, 42> zero_jacobian_array = model_handle_->getZeroJacobian(franka::Frame::kEndEffector);
+    for (size_t i = 0; i < zero_jacobian_array.size(); i++) {
+      publisher_franka_states_.msg_.O_J_ee[i] = zero_jacobian_array[i];
     }
     ///////////////////////
 
