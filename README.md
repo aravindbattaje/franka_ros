@@ -1,13 +1,5 @@
-# ROS integration for Franka Emika research robots
+# `franka_ros` with Jacobian updates
 
-[![CI](https://github.com/frankaemika/franka_ros/actions/workflows/ci.yml/badge.svg)](https://github.com/frankaemika/franka_ros/actions/workflows/ci.yml)
+This repository is based off [Franka ROS](https://github.com/frankaemika/franka_ros/) 0.9.0.
 
-
-See the [Franka Control Interface (FCI) documentation][fci-docs] for more information.
-
-## License
-
-All packages of `franka_ros` are licensed under the [Apache 2.0 license][apache-2.0].
-
-[apache-2.0]: https://www.apache.org/licenses/LICENSE-2.0.html
-[fci-docs]: https://frankaemika.github.io/docs
+The only addition is that some Jacobians are published as part of the franka_state_controller.
