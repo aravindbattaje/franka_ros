@@ -187,6 +187,22 @@ bool FrankaStateController::init(hardware_interface::RobotHW* robot_hardware,
     return false;
   }
 
+  auto* model_interface = robot_hardware->get<franka_hw::FrankaModelInterface>();
+  if (model_interface == nullptr) {
+    ROS_ERROR_STREAM(
+        "FrankaStateController: Error getting model interface from hardware");
+    return false;
+  }
+  try {
+    model_handle_ = std::make_unique<franka_hw::FrankaModelHandle>(
+        model_interface->getHandle(arm_id_ + "_model"));
+  } catch (hardware_interface::HardwareInterfaceException& ex) {
+    ROS_ERROR_STREAM(
+        "FrankaStateController: Exception getting model handle from interface: "
+        << ex.what());
+    return false;
+  }
+
   publisher_transforms_.init(root_node_handle, "/tf", 1);
   publisher_franka_states_.init(controller_node_handle, "franka_states", 1);
   publisher_joint_states_.init(controller_node_handle, "joint_states", 1);
@@ -423,6 +439,17 @@ void FrankaStateController::publishFrankaStates(const ros::Time& time) {
             franka_msgs::FrankaState::ROBOT_MODE_AUTOMATIC_ERROR_RECOVERY;
         break;
     }
+
+    ///////////////////////
+    std::array<double, 42> body_jacobian_array = model_handle_->getBodyJacobian(franka::Frame::kEndEffector);
+    for (size_t i = 0; i < body_jacobian_array.size(); i++) {
+      publisher_franka_states_.msg_.ee_J_ee[i] = body_jacobian_array[i];
+    }
+    std::array<double, 42> zero_jacobian_array = model_handle_->getZeroJacobian(franka::Frame::kEndEffector);
+    for (size_t i = 0; i < zero_jacobian_array.size(); i++) {
+      publisher_franka_states_.msg_.O_J_ee[i] = zero_jacobian_array[i];
+    }
+    ///////////////////////
 
     publisher_franka_states_.msg_.header.seq = sequence_number_;
     publisher_franka_states_.msg_.header.stamp = time;

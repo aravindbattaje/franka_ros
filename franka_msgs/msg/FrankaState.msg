@@ -41,6 +41,11 @@ float64[16] F_T_EE
 float64[16] F_T_NE
 float64[16] NE_T_EE
 float64[16] EE_T_K
+
+# Geometric Jacobian in end effector
+float64[42] ee_J_ee 
+float64[42] O_J_ee 
+
 float64 time
 float64 control_command_success_rate
 uint8 ROBOT_MODE_OTHER=0
